@@ -1,4 +1,4 @@
-# Lab 03 - Implement Virtual Networking (Using Azure CLI)
+# Chapter3 Lab 01 - Implement Virtual Networking (Using Azure CLI)
 
 ## Lab Introduction
 This lab focuses on the basics of virtual networking and subnetting in Azure using the Azure CLI. You'll create virtual networks, subnets, network security groups (NSGs), application security groups (ASGs), and configure DNS zones. Estimated time: 50 minutes.
