@@ -1,49 +1,80 @@
 # Docker Tutorial for Students
 
-## Introduction to Docker
+## OPERATING SYSTEMS 3
 
-Docker is a platform that simplifies the process of developing, shipping, and running applications using containers. Containers are lightweight, portable, and self-contained units of software that package an application along with its dependencies, ensuring it runs consistently across different computing environments.
+### EIOSY3A
 
-This tutorial will guide students through the essential Docker concepts and commands with practical examples to help them get started. The labs assume you are running a Linux environment.
+## DOCKER PRIMER
 
 ---
 
-## Setting Up Docker
+## Introduction to Docker
+
+Docker is a platform that simplifies the process of developing, shipping, and running applications using containers. Containers are lightweight, portable, and self-contained units of software that package an application along with its dependencies, such as libraries and configurations, ensuring it runs consistently across different computing environments. Unlike virtual machines, which emulate an entire operating system, containers share the host OS kernel, making them much more efficient in terms of resource usage and performance.
+
+This tutorial will guide students through the essential Docker concepts and commands with practical examples to help them get started. In this tutorial, we assume the environment you will be running the labs is Linux.
+
+---
+
+## 1. Setting Up Docker
+
+Docker must be installed before it can be used. Below are instructions for different Linux distributions.
 
 ### Installation
 
-**For Debian/Ubuntu:**
+#### For Debian/Ubuntu:
+To install Docker on Debian-based distributions like Ubuntu, run the following commands:
 ```bash
 sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io
 ```
 
-**For RHEL/CentOS:**
+#### For RHEL/CentOS:
+For Red Hat-based distributions like CentOS, use the following commands:
 ```bash
 sudo yum install docker-ce docker-ce-cli containerd.io
 ```
 
 ### Starting Docker
+Once installed, Docker must be started and enabled to run at boot.
 
-Start and enable Docker service:
+#### Start Docker:
 ```bash
 sudo systemctl start docker
+```
+
+#### Enable Docker to start on boot:
+```bash
 sudo systemctl enable docker
+```
+
+#### Check the status of Docker:
+```bash
 sudo systemctl status docker
 ```
 
+If Docker is running correctly, the status command should indicate that the service is active.
+
 ---
 
-## Working with Docker Images
+## 2. Working with Docker Images
 
-Docker images are blueprints for containers. Below are key commands:
+Docker images are the foundation of containers. Images contain the software, libraries, and dependencies required to run applications inside containers.
 
 ### Listing Downloaded Images
+To list all the images stored locally on your system, run:
 ```bash
 docker images
 ```
+Example Output:
+```
+REPOSITORY   TAG       IMAGE ID       CREATED        SIZE
+nginx        latest    605c77e22612   2 weeks ago    133MB
+ubuntu       20.04     ba6acccedd29   3 weeks ago    72.8MB
+```
 
-### Download an Image from Docker Hub
+### Downloading an Image from Docker Hub
+Docker Hub is a public registry where images are stored. To download an image, use:
 ```bash
 docker pull <image-name>:<tag>
 ```
@@ -54,6 +85,7 @@ docker pull ubuntu:20.04
 ```
 
 ### Removing an Image
+If an image is no longer needed, it can be removed to free up space:
 ```bash
 docker rmi <image-id>
 ```
@@ -65,70 +97,63 @@ docker rmi -f nginx
 
 ---
 
-## Running Containers
+## 3. Running Containers
 
-Containers are instances of images. Below are different ways to run them:
+Once an image is downloaded, you can create and run containers from it.
 
-### Run a Container Interactively
+### Running a Container Interactively
+The `-it` option allows you to interact with a running container:
 ```bash
 docker run -it <image-name> <command>
 ```
 Example:
 ```bash
+docker run ubuntu echo "Hello"
 docker run -i ubuntu /bin/bash
 ```
 
-### Run a Container in Detached Mode
+### Running a Container in Detached Mode
+Detached mode (`-d`) allows a container to run in the background:
 ```bash
 docker run -d <image-name>
 ```
 Example:
 ```bash
 docker run -d nginx
-```
-
-### Map Container Ports to the Host
-```bash
-docker run -p <host-port>:<container-port> <image-name>
-```
-Example:
-```bash
-docker run -p 8080:80 nginx
-```
-
-### Setting Environment Variables
-```bash
-docker run -e MYSQL_ROOT_PASSWORD=mypassword mysql:5.7
+docker run -d -e MYSQL_ROOT_PASSWORD=mypassword mysql
 ```
 
 ---
 
-## Managing Containers
+## 4. Managing Containers
 
-### List All Containers
+Containers can be stopped, restarted, or removed when needed.
+
+### Listing All Containers
 ```bash
 docker ps -a
 ```
 
-### Start, Stop, and Remove Containers
+### Starting, Stopping, and Removing a Container
 ```bash
 docker start <container-id>
 docker stop <container-id>
 docker rm <container-id>
 ```
 
-### Clean Up Unused Resources
+### Cleaning Up Unused Containers
+To remove all stopped containers:
 ```bash
 docker container prune
-docker image prune
-docker system prune -a
 ```
 
 ---
 
-## Docker Volumes
+## 5. Docker Volumes
 
-### Create a Persistent Volume
+Containers are ephemeral, meaning data inside them is lost when they stop. Docker volumes allow persistent storage outside the container lifecycle.
+
+### Creating a Persistent Volume
 ```bash
 docker run -v <volume-name>:<container-path> <image-name>
 ```
@@ -137,7 +162,8 @@ Example:
 docker run -v mysql_data:/var/lib/mysql mysql:5.7
 ```
 
-### List and Remove Volumes
+### Managing Volumes
+To list and remove volumes:
 ```bash
 docker volume ls
 docker volume rm <volume-name>
@@ -145,34 +171,36 @@ docker volume rm <volume-name>
 
 ---
 
-## Networking in Docker
+## 6. Networking in Docker
 
-Docker provides multiple networking options:
+Docker networking allows containers to communicate with each other and the outside world.
 
-### List Networks
+### Listing Available Networks
 ```bash
 docker network ls
 ```
 
-### Create a Bridge Network
+### Creating a Custom Bridge Network
 ```bash
 docker network create my_bridge
 ```
 
-### Run Containers in the Same Network
+### Connecting Containers to the Same Network
 ```bash
 docker run --name container1 --network my_bridge nginx
 docker run --name container2 --network my_bridge alpine ping container1
 ```
 
-### Remove a Network
+### Removing a Network
 ```bash
 docker network rm <network-name>
 ```
 
 ---
 
-## Building Custom Docker Images
+## 7. Building Custom Docker Images
+
+Users can create their own Docker images using a Dockerfile.
 
 ### Example Dockerfile
 ```dockerfile
@@ -184,7 +212,7 @@ COPY . .
 CMD ["bash"]
 ```
 
-### Build and Run the Docker Image
+### Building and Running a Custom Image
 ```bash
 docker build -t my-app .
 docker run -it my-app
@@ -192,9 +220,9 @@ docker run -it my-app
 
 ---
 
-## Uploading Images to Docker Hub
+## 8. Uploading Images to Docker Hub
 
-### Tag and Push an Image
+### Tagging and Pushing an Image
 ```bash
 docker tag my-app <dockerhub-username>/my-app:v1
 docker push <dockerhub-username>/my-app:v1
@@ -202,9 +230,9 @@ docker push <dockerhub-username>/my-app:v1
 
 ---
 
-## Deploying an App to Azure Using ACI
+## 9. Deploying an App to Azure Using ACI
 
-### Set Up Azure CLI and ACR
+### Steps to Deploy a Container
 ```bash
 az login
 az group create --name myResourceGroup --location eastus
@@ -212,49 +240,26 @@ az acr create --resource-group myResourceGroup --name myRegistry --sku Basic
 az acr login --name myRegistry
 ```
 
-### Tag and Push the Image
+### Pushing the Image to ACR
 ```bash
 docker tag my-app myRegistry.azurecr.io/my-app:v1
 docker push myRegistry.azurecr.io/my-app:v1
 ```
 
-### Deploy to ACI
+### Deploying the Container in Azure
 ```bash
 az container create --resource-group myResourceGroup --name myContainer --image myRegistry.azurecr.io/my-app:v1 --dns-name-label my-app --ports 80
 ```
 
 ---
 
-## Deploying a Multi-Container Application with Docker Compose
-
-### Example `docker-compose.yml`
-```yaml
-version: '3'
-services:
-  web:
-    image: nginx
-    ports:
-      - "8080:80"
-  db:
-    image: mysql:5.7
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-```
-
-### Start the Multi-Container Application
-```bash
-docker-compose up -d
-```
-
----
-
 ## Conclusion
 
-This tutorial covered:
+This tutorial covered the fundamental concepts of Docker, including:
 - Installing Docker
 - Managing images and containers
 - Networking and volumes
-- Building custom images
-- Deploying applications using Docker Compose and Azure ACI
+- Creating custom images
+- Deploying applications using Azure and Docker Compose
 
-Continue practicing to build your Docker expertise!
+
