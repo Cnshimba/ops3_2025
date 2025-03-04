@@ -1,0 +1,143 @@
+
+# Azure CLI Cheat Sheet: Working with Azure Resources
+
+This lab guide introduces you to essential Azure CLI commands for managing Azure resources. It’s organized into categories for ease of use. Follow along to perform basic operations like logging in, creating resources, and deploying ARM templates.
+
+## Prerequisites
+- Azure CLI installed (`az --version` to verify).
+- An active Azure subscription.
+- Basic familiarity with the terminal/command line.
+
+---
+
+## Category 1: General Commands
+These commands help you set up your environment and check your Azure resources.
+
+1. **Login to Azure**
+   - Command: `az login`
+   - Description: Authenticates you to your Azure account. Opens a browser for sign-in.
+   - Example: `az login`
+
+2. **Set Active Subscription**
+   - Command: `az account set --subscription <subscription-id>`
+   - Description: Sets the subscription you’ll work with if you have multiple.
+   - Example: `az account set --subscription "12345678-1234-1234-1234-1234567890ab"`
+
+3. **List Subscriptions**
+   - Command: `az account list --output table`
+   - Description: Displays all subscriptions tied to your account.
+   - Example: `az account list --output table`
+
+4. **Check Deployed Resources**
+   - Command: `az resource list --output table`
+   - Description: Lists all resources in the current subscription.
+   - Example: `az resource list --output table`
+
+5. **Show Current Configuration**
+   - Command: `az configure --list-defaults`
+   - Description: Displays default settings (e.g., resource group, location).
+   - Example: `az configure --list-defaults`
+
+---
+
+## Category 2: Creating and Managing Resources
+These commands let you create and manage basic Azure resources like resource groups, storage accounts, VNets, subnets, and NSGs.
+
+1. **Create a Resource Group**
+   - Command: `az group create --name <group-name> --location <location>`
+   - Description: Creates a resource group to organize resources.
+   - Example: `az group create --name MyResourceGroup --location eastus`
+
+2. **Create a Storage Account**
+   - Command: `az storage account create --name <storage-name> --resource-group <group-name> --location <location> --sku Standard_LRS`
+   - Description: Creates a storage account in the specified resource group.
+   - Example: `az storage account create --name mystorageacct --resource-group MyResourceGroup --location eastus --sku Standard_LRS`
+
+3. **Create a Virtual Network (VNet)**
+   - Command: `az network vnet create --resource-group <group-name> --name <vnet-name> --address-prefix <cidr> --location <location>`
+   - Description: Creates a VNet with a specified address space.
+   - Example: `az network vnet create --resource-group MyResourceGroup --name MyVNet --address-prefix 10.0.0.0/16 --location eastus`
+
+4. **Create a Subnet**
+   - Command: `az network vnet subnet create --resource-group <group-name> --vnet-name <vnet-name> --name <subnet-name> --address-prefix <subnet-cidr>`
+   - Description: Adds a subnet to an existing VNet.
+   - Example: `az network vnet subnet create --resource-group MyResourceGroup --vnet-name MyVNet --name MySubnet --address-prefix 10.0.1.0/24`
+
+5. **Create a Network Security Group (NSG)**
+   - Command: `az network nsg create --resource-group <group-name> --name <nsg-name> --location <location>`
+   - Description: Creates an NSG to control network traffic.
+   - Example: `az network nsg create --resource-group MyResourceGroup --name MyNSG --location eastus`
+
+6. **Add a Rule to an NSG**
+   - Command: `az network nsg rule create --resource-group <group-name> --nsg-name <nsg-name> --name <rule-name> --priority <priority> --source-address-prefixes '*' --destination-port-ranges <port> --access Allow --protocol Tcp --direction Inbound`
+   - Description: Adds a rule to the NSG (e.g., allow inbound traffic on a port).
+   - Example: `az network nsg rule create --resource-group MyResourceGroup --nsg-name MyNSG --name AllowSSH --priority 100 --source-address-prefixes '*' --destination-port-ranges 22 --access Allow --protocol Tcp --direction Inbound`
+
+7. **Associate NSG with Subnet**
+   - Command: `az network vnet subnet update --resource-group <group-name> --vnet-name <vnet-name> --name <subnet-name> --network-security-group <nsg-name>`
+   - Description: Links an NSG to a subnet.
+   - Example: `az network vnet subnet update --resource-group MyResourceGroup --vnet-name MyVNet --name MySubnet --network-security-group MyNSG`
+
+8. **List Resource Groups**
+   - Command: `az group list --output table`
+   - Description: Shows all resource groups in your subscription.
+   - Example: `az group list --output table`
+
+9. **Delete a Resource Group**
+   - Command: `az group delete --name <group-name> --yes --no-wait`
+   - Description: Deletes a resource group and all its resources.
+   - Example: `az group delete --name MyResourceGroup --yes --no-wait`
+
+---
+
+## Category 3: Deploying an ARM Template
+Azure Resource Manager (ARM) templates allow you to define and deploy resources declaratively.
+
+1. **Deploy an ARM Template**
+   - Command: `az deployment group create --resource-group <group-name> --template-file <template-file>.json --parameters <parameters-file>.json`
+   - Description: Deploys resources defined in an ARM template to a resource group.
+   - Example: `az deployment group create --resource-group MyResourceGroup --template-file azuredeploy.json --parameters azuredeploy.parameters.json`
+
+2. **Validate an ARM Template**
+   - Command: `az deployment group validate --resource-group <group-name> --template-file <template-file>.json`
+   - Description: Checks the ARM template for errors before deployment.
+   - Example: `az deployment group validate --resource-group MyResourceGroup --template-file azuredeploy.json`
+
+3. **List Deployments**
+   - Command: `az deployment group list --resource-group <group-name> --output table`
+   - Description: Lists all deployments in a resource group.
+   - Example: `az deployment group list --resource-group MyResourceGroup --output table`
+
+---
+
+## Category 4: Managing Virtual Machines (VMs)
+Basic commands to create and manage VMs.
+
+1. **Create a VM**
+   - Command: `az vm create --resource-group <group-name> --name <vm-name> --image UbuntuLTS --admin-username <username> --generate-ssh-keys`
+   - Description: Creates a simple Ubuntu VM with SSH access.
+   - Example: `az vm create --resource-group MyResourceGroup --name MyVM --image UbuntuLTS --admin-username azureuser --generate-ssh-keys`
+
+2. **List VMs**
+   - Command: `az vm list --resource-group <group-name> --output table`
+   - Description: Displays all VMs in a resource group.
+   - Example: `az vm list --resource-group MyResourceGroup --output table`
+
+3. **Start/Stop a VM**
+   - Command: `az vm start --resource-group <group-name> --name <vm-name>`  
+             `az vm stop --resource-group <group-name> --name <vm-name>`
+   - Description: Starts or stops a VM.
+   - Example: `az vm start --resource-group MyResourceGroup --name MyVM`
+
+---
+
+## Tips for Success
+- **Output Formatting**: Use `--output table` for readable output or `--output json` for scripting.
+- **Help**: Append `--help` to any command for more details (e.g., `az network vnet create --help`).
+- **Locations**: Common locations include `eastus`, `westus`, `northeurope`. Use `az account list-locations` to see all.
+- **Networking Notes**: Replace `<cidr>` and `<subnet-cidr>` with valid IP ranges (e.g., `10.0.0.0/16` for VNet, `10.0.1.0/24` for subnet).
+- **ARM Templates**: Start with simple JSON templates from Azure Quickstart Templates (search online).
+
+---
+
+This updated guide now includes commands for creating and managing VNets, subnets, and NSGs, which are foundational for networking in Azure. Let me know if you’d like further adjustments or examples!
