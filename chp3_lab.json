@@ -1,0 +1,74 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnet1Name": {
+            "type": "string",
+            "metadata": {
+                "description": "description",
+                "displayName": "VNet1 Name"
+            },
+            "defaultValue": "CoreServicesVnet"
+        },
+        "subnetOneName": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
+            },
+            "defaultValue": "SharedServicesSubnet"
+        },
+        "subnetTwoName": {
+            "type": "string",
+            "metadata": {
+                "description": "description"
+            },
+            "defaultValue": "DatabaseSubnet"
+        }
+    },
+    "functions": [],
+    "variables": {
+        "vnet1AddressPrefix": "10.20.0.0/16",
+        "subnetOneAddressPrefix": "10.20.10.0/24",
+        "subnetTwoAddressPrefix": "10.20.20.0/24"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('vnet1Name')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[variables('vnet1AddressPrefix')]"
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('vnet1Name'), '/', parameters('subnetOneName'))]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnet1Name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "[variables('subnetOneAddressPrefix')]"
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('vnet1Name'), '/', parameters('subnetTwoName'))]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnet1Name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "[variables('subnetTwoAddressPrefix')]"
+            }
+        }
+    ],
+    "outputs": {}
+}
