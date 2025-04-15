@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Home Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #007BFF;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Smart Home Sensors Dashboard</h1>
+    </header>
+    <div class="container">
+        <canvas id="sensorChart"></canvas>
+    </div>
+    <script>
+        // Pass Python data into JavaScript
+        const sensorNames = {{ sensor_names|tojson }};
+        const values = {{ values|tojson }};
+        const timestamps = {{ timestamps|tojson }};
+        
+        // Create data points with explicit labels
+        const dataPoints = values.map((value, index) => ({
+            x: timestamps[index],
+            y: value,
+            sensorName: sensorNames[index]
+        }));
+
+        // Set up the chart
+        const ctx = document.getElementById('sensorChart').getContext('2d');
+        const sensorChart = new Chart(ctx, {
+            type: 'line', // Line chart
+            data: {
+                labels: timestamps, // X-axis labels (timestamps)
+                datasets: [{
+                    label: 'Sensor Values',
+                    data: dataPoints,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderWidth: 2,
+                    tension: 0.4 // Smooth curve
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const dataPoint = context.dataset.data[context.dataIndex];
+                                return `${dataPoint.sensorName}: ${dataPoint.y}`;
+                            }
+                        }
+                    },
+                    datalabels: {
+                        display: true,
+                        color: 'black',
+                        anchor: 'end',
+                        align: 'top',
+                        formatter: function(value, context) {
+                            return context.dataset.data[context.dataIndex].sensorName;
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Timestamp'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Sensor Value'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
